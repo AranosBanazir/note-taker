@@ -3,6 +3,32 @@ const PORT = 3000
 const app = express()
 const path = require('path')
 const fs = require('fs/promises')
+const { get } = require('http')
+const dbLocation = path.join(__dirname, '..', '..', '..', 'db/db.json')
+const usedIDs = []
+
+
+function getRandomNum(){
+    return Math.floor(Math.random() * 100000)
+}
+
+//get used IDs
+async function getID(){
+    const savedNotes = await fs.readFile(dbLocation, 'utf8') || '[]'
+    const notes = JSON.parse(savedNotes)
+    let rndN  = getRandomNum()
+    notes.forEach(note => {
+        if (!usedIDs.includes(note.id)){
+            usedIDs.push(note.id)
+        }
+    })
+
+    while (usedIDs.includes(rndN)){
+        rndN = getRandomNum()
+    }
+
+    return rndN
+}
 
 
 // console.log()
@@ -23,15 +49,21 @@ app.get('/notes', (req, res)=>{
 
 //getting notes from the DB
 app.get('/api/notes', async (req, res)=>{
-   res.sendFile(path.join(__dirname, '..', '..', '..', 'db/db.json'))
+   res.sendFile(dbLocation)
 })
 
 //adding notes to the DB
-app.post('/api/notes', (req, res)=>{
-   const  notes = fs.readFile(path.join(__dirname, '..', '..', '..', 'db/db.json')) || []
-    
-   notes.push(req.body)
-   fs.writeFile(__dirname, '..', '..', '..', 'db/db.json', JSON.stringify(notes))
+app.post('/api/notes', async (req, res)=>{
+   const savedNotes = await fs.readFile(dbLocation, 'utf8') || '[]'
+   const msgBody = req.body
+   const notes = JSON.parse(savedNotes)
+   msgBody.id = await getID()
+   notes.push(msgBody)
+   
+   
+   
+    await fs.writeFile(dbLocation, JSON.stringify(notes))
+    res.end()
 })
 
 //BONUS- attempting to delte a specific note
