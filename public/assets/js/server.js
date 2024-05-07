@@ -68,7 +68,7 @@ app.post('/api/notes', async (req, res)=>{
 
 //BONUS- attempting to delte a specific note
 app.delete('/api/notes/:id', (req, res)=>{
-
+    console.log(req.params)
 })
 
 app.listen(PORT, ()=>{
