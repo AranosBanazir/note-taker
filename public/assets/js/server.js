@@ -33,7 +33,7 @@ async function getID(){
 
 // console.log()
 
-app.use(express.static('public'))
+app.use(express.static(path.join(__dirname, '..', '..', '..', 'public')))
 app.use(express.json())
 
 //getting home page index.html
