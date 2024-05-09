@@ -1,9 +1,8 @@
 const express = require("express");
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const app = express();
 const path = require("path");
 const fs = require("fs/promises");
-const { get } = require("http");
 const dbLocation = path.join(__dirname, "db", "db.json");
 const usedIDs = [];
 
@@ -76,5 +75,5 @@ app.delete("/api/notes/:id", async (req, res) => {
 //setting the port for the server to listen to requests on
 app.listen(PORT, () => {
   console.clear();
-  console.log("Listening on port: 3000");
+  console.log(`Listening on port: ${PORT}`);
 });
